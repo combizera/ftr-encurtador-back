@@ -97,7 +97,7 @@ export async function linksRoutes(app: FastifyInstance) {
     })
   })
 
-  // REDIRECT TO ORIGINAL
+  // GET ORIGINAL
   app.get('/:shortCode', async (request, reply) => {
     const paramsSchema = z.object({
       shortCode: z.string().min(3),
@@ -128,6 +128,11 @@ export async function linksRoutes(app: FastifyInstance) {
       })
     }
 
-    return reply.redirect(link.originalUrl, 302)
+    return reply.send({
+      success: true,
+      data: {
+        originalUrl: link.originalUrl,
+      },
+    })
   })
 }
