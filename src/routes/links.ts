@@ -7,9 +7,12 @@ import { linksTable } from './../db/schema'
 
 const createLinkBodySchema = z.object({
   originalUrl: z.string().url(),
-  shortCode: z.string().min(3).max(50).regex(/^[a-zA-Z0-9-_]+$/),
+  shortCode: z
+    .string()
+    .min(3)
+    .max(50)
+    .regex(/^[a-zA-Z0-9-_]+$/),
 })
-type CreateLinkBody = z.infer<typeof createLinkBodySchema>
 
 export async function linksRoutes(app: FastifyInstance) {
   // CREATE
@@ -57,6 +60,51 @@ export async function linksRoutes(app: FastifyInstance) {
     return reply.send({
       success: true,
       data: links,
+    })
+  })
+
+  // UPDATE
+  app.put('/:shortCode', async (request, reply) => {
+    const paramsSchema = z.object({
+      shortCode: z.string().min(3),
+    })
+
+    const result = paramsSchema.safeParse(request.params)
+
+    if (!result.success) {
+      return reply.status(400).send({
+        success: false,
+        error: 'Invalid short code',
+        details: result.error.format(),
+      })
+    }
+
+    const { shortCode } = result.data
+
+    const [link] = await db
+      .select()
+      .from(linksTable)
+      .where(eq(linksTable.shortCode, shortCode))
+      .limit(1)
+
+    if (!link) {
+      return reply.status(404).send({
+        success: false,
+        error: 'Link not found',
+      })
+    }
+
+    const [updatedLink] = await db
+      .update(linksTable)
+      .set({
+        accessCount: link.accessCount + 1,
+      })
+      .where(eq(linksTable.shortCode, shortCode))
+      .returning()
+
+    return reply.send({
+      success: true,
+      data: updatedLink,
     })
   })
 
