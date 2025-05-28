@@ -96,4 +96,38 @@ export async function linksRoutes(app: FastifyInstance) {
       data: deleted[0],
     })
   })
+
+  // REDIRECT TO ORIGINAL
+  app.get('/:shortCode', async (request, reply) => {
+    const paramsSchema = z.object({
+      shortCode: z.string().min(3),
+    })
+
+    const result = paramsSchema.safeParse(request.params)
+
+    if (!result.success) {
+      return reply.status(400).send({
+        success: false,
+        error: 'Invalid short code',
+        details: result.error.format(),
+      })
+    }
+
+    const { shortCode } = result.data
+
+    const [link] = await db
+      .select()
+      .from(linksTable)
+      .where(eq(linksTable.shortCode, shortCode))
+      .limit(1)
+
+    if (!link) {
+      return reply.status(404).send({
+        success: false,
+        error: 'Link not found',
+      })
+    }
+
+    return reply.redirect(link.originalUrl, 302)
+  })
 }
