@@ -2,9 +2,112 @@
 
 Uma API completa para gerenciar encurtamento de URLs, desenvolvida com Node.js, TypeScript, Fastify e Drizzle ORM.
 
-## Funcionalidades e Regras
+## 📌 Rotas da API
 
-### Funcionalidades Principais
+### `POST /`
+
+Cria um novo link encurtado.
+
+**Requisição JSON:**
+
+```json
+{
+  "originalUrl": "https://exemplo.com",
+  "shortCode": "exemplo123"
+}
+```
+
+**Respostas possíveis:**
+
+- `201 Created`: Link criado com sucesso
+- `400 Bad Request`: Dados inválidos
+- `409 Conflict`: ShortCode já existe
+
+---
+
+### `GET /`
+
+Lista todas as URLs encurtadas cadastradas.
+
+**Resposta de sucesso:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "originalUrl": "https://exemplo.com",
+      "shortCode": "exemplo123",
+      "accessCount": 5,
+      "createdAt": "...",
+      "updatedAt": "..."
+    }
+  ]
+}
+```
+
+---
+
+### `PUT /:shortCode`
+
+Incrementa em +1 a contagem de acessos de um link.
+
+**Parâmetro de rota:**
+
+- `shortCode`: string
+
+**Respostas possíveis:**
+
+- `200 OK`: Contador atualizado com sucesso
+- `400 Bad Request`: Código inválido
+- `404 Not Found`: ShortCode não encontrado
+
+---
+
+### `DELETE /:shortCode`
+
+Remove uma URL encurtada do sistema.
+
+**Parâmetro de rota:**
+
+- `shortCode`: string
+
+**Respostas possíveis:**
+
+- `200 OK`: Link deletado com sucesso
+- `400 Bad Request`: Código inválido
+- `404 Not Found`: ShortCode não encontrado
+
+---
+
+### `GET /:shortCode`
+
+Obtém a URL original associada ao shortCode (sem redirecionamento).
+
+**Parâmetro de rota:**
+
+- `shortCode`: string
+
+**Resposta de sucesso:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "originalUrl": "https://exemplo.com"
+  }
+}
+```
+
+**Respostas possíveis:**
+
+- `400 Bad Request`: Código inválido
+- `404 Not Found`: ShortCode não encontrado
+
+> ℹ️ Este endpoint **não redireciona** automaticamente. Apenas retorna os dados da URL original.
+
+## BackEnd - Funcionalidade e Regras
 
 - [x] Deve ser possível criar um link
   - [x] Não deve ser possível criar um link com URL encurtada mal formatada
@@ -21,13 +124,13 @@ Uma API completa para gerenciar encurtamento de URLs, desenvolvida com Node.js, 
 
 ## Tecnologias Utilizadas
 
-- **Node.js** - Runtime JavaScript
-- **TypeScript** - Superset do JavaScript com tipagem estática
-- **Fastify** - Framework web rápido e eficiente
-- **Drizzle ORM** - ORM type-safe para TypeScript
-- **PostgreSQL** - Banco de dados relacional
-- **Zod** - Validação de schemas
-- **Docker** - Containerização
+- **Node.js**
+- **TypeScript**
+- **Fastify**
+- **Drizzle ORM**
+- **PostgreSQL**
+- **Zod**
+- **Docker**
 
 ## Pré-requisitos
 
