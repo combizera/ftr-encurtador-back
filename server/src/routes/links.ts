@@ -2,8 +2,8 @@ import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { FastifyInstance } from 'fastify'
 
-import { db } from './../db'
-import { linksTable } from './../db/schema'
+import { db } from '../db'
+import { linksTable } from '../db/schema'
 
 const createLinkBodySchema = z.object({
   originalUrl: z.string().url(),
