@@ -54,12 +54,26 @@ export async function linksRoutes(app: FastifyInstance) {
   })
 
   // READ
-  app.get('/', async (_, reply) => {
-    const links = await db.select().from(linksTable)
+  app.get('/', async (request, reply) => {
+    const query = request.query as { page?: string; pageSize?: string }
+    const page = Number(query.page) || 1
+    const pageSize = Number(query.pageSize) || 30
+
+    const offset = (page - 1) * pageSize
+
+    const links = await db
+      .select()
+      .from(linksTable)
+      .limit(pageSize)
+      .offset(offset)
 
     return reply.send({
       success: true,
       data: links,
+      pagination: {
+        currentPage: page,
+        pageSize,
+      },
     })
   })
 

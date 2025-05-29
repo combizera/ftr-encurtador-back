@@ -4,7 +4,7 @@ Uma API completa para gerenciar encurtamento de URLs, desenvolvida com Node.js, 
 
 ## 📌 Rotas da API
 
-### `POST /`
+### `POST /links/`
 
 Cria um novo link encurtado.
 
@@ -25,9 +25,17 @@ Cria um novo link encurtado.
 
 ---
 
-### `GET /`
+### `GET /links/`
 
 Lista todas as URLs encurtadas cadastradas.
+
+**Query Params:**
+
+- page (opcional, default: 1)
+- pageSize (opcional, default: 1)
+
+Exemplo:  
+GET /?page=2&pageSize=10
 
 **Resposta de sucesso:**
 
@@ -43,13 +51,17 @@ Lista todas as URLs encurtadas cadastradas.
       "createdAt": "...",
       "updatedAt": "..."
     }
-  ]
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "pageSize": 30
+  }
 }
 ```
 
 ---
 
-### `PUT /:shortCode`
+### `PUT /links/:shortCode`
 
 Incrementa em +1 a contagem de acessos de um link.
 
@@ -65,7 +77,7 @@ Incrementa em +1 a contagem de acessos de um link.
 
 ---
 
-### `DELETE /:shortCode`
+### `DELETE /links/:shortCode`
 
 Remove uma URL encurtada do sistema.
 
@@ -81,7 +93,7 @@ Remove uma URL encurtada do sistema.
 
 ---
 
-### `GET /:shortCode`
+### `GET /links/:shortCode`
 
 Obtém a URL original associada ao shortCode (sem redirecionamento).
 
@@ -107,6 +119,13 @@ Obtém a URL original associada ao shortCode (sem redirecionamento).
 
 > ℹ️ Este endpoint **não redireciona** automaticamente. Apenas retorna os dados da URL original.
 
+### 📤 Exportar Links em CSV
+
+**GET /export**  
+Gera um arquivo CSV contendo todos os links cadastrados.  
+O nome do arquivo é único e gerado automaticamente.  
+O CSV contém os campos: originalUrl, shortCode, accessCount e createdAt.
+
 ## BackEnd - Funcionalidade e Regras
 
 - [x] Deve ser possível criar um link
@@ -119,7 +138,7 @@ Obtém a URL original associada ao shortCode (sem redirecionamento).
 - [x] Deve ser possível exportar os links criados em um CSV
   - [ ] Deve ser possível acessar o CSV por meio de uma CDN (Amazon S3, Cloudflare R2, etc)
   - [x] Deve ser gerado um nome aleatório e único para o arquivo
-  - [ ] Deve ser possível realizar a listagem de forma performática
+  - [x] Deve ser possível realizar a listagem de forma performática
   - [x] O CSV deve ter campos como, URL original, URL encurtada, contagem de acessos e data de criação.
 
 ## Tecnologias Utilizadas
