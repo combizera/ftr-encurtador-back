@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DownloadSimple, Trash, Copy, Link } from "phosphor-react";
 
 import { IconButton } from "./IconButton";
@@ -6,47 +6,50 @@ import { ButtonSecondary } from "./ButtonSecondary";
 
 type Link = {
   id: string;
-  shortUrl: string;
+  shortCode: string;
   originalUrl: string;
-  clicks: number;
+  accessCount: number;
 };
 
 export function LinksList() {
-  const [links, setLinks] = useState<Link[]>([
-    {
-      id: "1",
-      shortUrl: "brev.ly/Portfolio-Dev",
-      originalUrl: "devsite.portfolio.com.br/devname-123456",
-      clicks: 30,
-    },
-    {
-      id: "2",
-      shortUrl: "brev.ly/Linkedin-Profile",
-      originalUrl: "linkedin.com/in/myprofile",
-      clicks: 15,
-    },
-    {
-      id: "3",
-      shortUrl: "brev.ly/Github-Project",
-      originalUrl: "github.com/devname/project-name-v2",
-      clicks: 34,
-    },
-    {
-      id: "4",
-      shortUrl: "brev.ly/Figma-Encurtador-de-Links",
-      originalUrl: "figma.com/design/file/Encurtador-de-Links",
-      clicks: 53,
-    },
-  ]);
+  const [links, setLinks] = useState<Link[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  function copyLink(url: string) {
-    navigator.clipboard.writeText(url).then(() => {
+
+  useEffect(() => {
+    async function fetchLinks() {
+      try {
+        const response = await fetch("http://localhost:3333/links/");
+        console.log("Response status:", response.status);
+        console.log("Response headers:", response.headers);
+        console.log(response)
+        const data = await response.json();
+        console.log(data)
+
+        if (data.success) {
+          setLinks(data.data);
+        } else {
+          console.error("Erro ao buscar links:", data.error);
+        }
+      } catch (error) {
+        console.error("Erro na requisição:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchLinks();
+  }, []);
+
+  function copyLink(shortCode: string) {
+    const fullUrl = `https://brev.ly/${shortCode}`;
+    navigator.clipboard.writeText(fullUrl).then(() => {
       alert("Link copiado para a área de transferência!");
     });
   }
 
-  function deleteLink(id: string) {
-    setLinks((prevLinks) => prevLinks.filter((link) => link.id !== id));
+  function deleteLink(shortCode: string) {
+    setLinks((prev) => prev.filter((link) => link.shortCode !== shortCode));
   }
 
   function handleDownloadCsv() {
@@ -65,7 +68,9 @@ export function LinksList() {
         </ButtonSecondary>
       </div>
 
-      {links.length === 0 ? (
+      {loading ? (
+        <p className="text-gray-500">Carregando...</p>
+      ) : links.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-gray-500">
           <Link size={48} className="mb-4" />
           <span className="text-sm text-center">
@@ -84,7 +89,7 @@ export function LinksList() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {link.shortUrl}
+                    brev.ly/{link.shortCode}
                   </a>
                   <span className="text-xs text-gray-500 truncate max-w-[150px] sm:max-w-none">
                     {link.originalUrl}
@@ -93,13 +98,19 @@ export function LinksList() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 mr-2">
-                    {link.clicks} acessos
+                    {link.accessCount} acessos
                   </span>
                   <div className="flex items-center gap-2">
-                    <IconButton title="Copiar link" onClick={() => copyLink(link.shortUrl)}>
+                    <IconButton
+                      title="Copiar link"
+                      onClick={() => copyLink(link.shortCode)}
+                    >
                       <Copy size={16} />
                     </IconButton>
-                    <IconButton title="Excluir link" onClick={() => deleteLink(link.id)}>
+                    <IconButton
+                      title="Excluir link"
+                      onClick={() => deleteLink(link.shortCode)}
+                    >
                       <Trash size={16} />
                     </IconButton>
                   </div>
