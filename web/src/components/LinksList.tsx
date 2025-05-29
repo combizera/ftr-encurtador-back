@@ -15,7 +15,6 @@ export function LinksList() {
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     async function fetchLinks() {
       try {
@@ -44,9 +43,30 @@ export function LinksList() {
     });
   }
 
-  function deleteLink(shortCode: string) {
-    setLinks((prev) => prev.filter((link) => link.shortCode !== shortCode));
+  async function deleteLink(shortCode: string) {
+    const confirmDelete = confirm("Tem certeza que deseja excluir este link?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://localhost:3333/links/${shortCode}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        alert(data.error || "Erro ao deletar link.");
+        return;
+      }
+
+      setLinks((prev) => prev.filter((link) => link.shortCode !== shortCode));
+      alert("Link deletado com sucesso!");
+    } catch (error) {
+      alert("Erro ao se comunicar com o servidor.");
+      console.error("Erro ao deletar:", error);
+    }
   }
+
 
   function handleDownloadCsv() {
     //
