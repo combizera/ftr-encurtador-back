@@ -6,12 +6,14 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   active?: boolean;
   iconLeft?: ReactNode;
+  prefix?: string; // Nova prop para o prefixo
 }
 
 export function InputField({
   label,
   error,
   active = false,
+  prefix,
   ...props
 }: InputFieldProps) {
   const hasError = !!error;
@@ -35,10 +37,22 @@ export function InputField({
       </label>
 
       <div className={`relative`}>
-        <input
-          className={`w-full px-3 py-2 text-sm rounded border ${borderColor} ${focusStyle} outline-none transition-all`}
-          {...props}
-        />
+        {prefix ? (
+          <div className={`flex rounded border ${borderColor} ${focusStyle} transition-all`}>
+            <span className="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-500 text-sm rounded-l border-r">
+              {prefix}
+            </span>
+            <input
+              className={`flex-1 px-3 py-2 text-sm rounded-r outline-none min-w-0`}
+              {...props}
+            />
+          </div>
+        ) : (
+          <input
+            className={`w-full px-3 py-2 text-sm rounded border ${borderColor} ${focusStyle} outline-none transition-all`}
+            {...props}
+          />
+        )}
       </div>
 
       {hasError && (

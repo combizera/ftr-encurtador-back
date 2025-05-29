@@ -1,9 +1,48 @@
+import { useState } from "react";
 import { InputField } from "./InputField";
 import { ButtonPrimary } from "./ButtonPrimary";
 
 export function NewLinkForm() {
+  const [originalUrl, setOriginalUrl] = useState("");
+  const [shortCode, setShortCode] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3333/links", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          originalUrl,
+          shortCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || "Erro ao criar link.");
+        return;
+      }
+
+      setOriginalUrl("");
+      setShortCode("");
+      alert("Link criado com sucesso!");
+    } catch {
+      setError("Erro ao se comunicar com o servidor.");
+    }
+  }
+
   return (
-    <div className="bg-white w-full rounded-lg shadow p-6 max-w-md mx-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white w-full rounded-lg shadow p-6 max-w-md mx-auto"
+    >
       <h2 className="text-lg font-semibold mb-4">
         Novo link
       </h2>
@@ -12,18 +51,24 @@ export function NewLinkForm() {
         label="Link Original"
         placeholder="www.exemplo.com.br"
         type="text"
-        error="Esse link já existe"
+        value={originalUrl}
+        onChange={(e) => setOriginalUrl(e.target.value)}
+        error={error}
       />
 
       <InputField
         label="Link Encurtado"
-        placeholder="brev.ly/"
+        placeholder="seu-alias"
         type="text"
+        value={shortCode}
+        onChange={(e) => setShortCode(e.target.value)}
+        prefix="brev.ly/"
+        error={error}
       />
 
-      <ButtonPrimary href="#" className="mt-4">
+      <ButtonPrimary type="submit" className="mt-4">
         Salvar link
       </ButtonPrimary>
-    </div>
+    </form>
   );
 }

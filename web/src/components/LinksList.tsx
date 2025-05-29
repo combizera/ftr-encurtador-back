@@ -20,11 +20,7 @@ export function LinksList() {
     async function fetchLinks() {
       try {
         const response = await fetch("http://localhost:3333/links/");
-        console.log("Response status:", response.status);
-        console.log("Response headers:", response.headers);
-        console.log(response)
         const data = await response.json();
-        console.log(data)
 
         if (data.success) {
           setLinks(data.data);
@@ -92,7 +88,10 @@ export function LinksList() {
                     brev.ly/{link.shortCode}
                   </a>
                   <span className="text-xs text-gray-500 truncate max-w-[150px] sm:max-w-none">
-                    {link.originalUrl}
+                    {link.originalUrl.length > 60 ?
+                      `${link.originalUrl.substring(0, 60)}...` :
+                      link.originalUrl
+                    }
                   </span>
                 </div>
 

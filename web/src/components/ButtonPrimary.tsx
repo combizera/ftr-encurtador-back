@@ -1,14 +1,16 @@
-interface ButtonPrimaryProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface ButtonPrimaryProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   disabled?: boolean;
   children?: React.ReactNode;
 }
 
 export function ButtonPrimary({ disabled = false, children = "Label", ...props }: ButtonPrimaryProps) {
   return (
-    <a
+    <button
       {...props}
+      disabled={disabled}
       className={`
         inline-block
+        cursor-pointer
         w-[300px]
         px-8 py-4
         text-white text-sm font-medium text-center
@@ -22,6 +24,6 @@ export function ButtonPrimary({ disabled = false, children = "Label", ...props }
       `}
     >
       {children}
-    </a>
+    </button>
   );
 }
