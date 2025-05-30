@@ -1,5 +1,6 @@
 import { DownloadSimple, Trash, Copy, Link } from "phosphor-react";
 
+import { config } from "../config";
 import { IconButton } from "./IconButton";
 import { ButtonSecondary } from "./ButtonSecondary";
 
@@ -18,7 +19,7 @@ interface LinksListProps {
 
 export function LinksList({ links, loading, onLinkRemoved }: LinksListProps) {
   function copyLink(shortCode: string) {
-    const fullUrl = `http://localhost:5173/redirect/${shortCode}`;
+    const fullUrl = `${config.FRONTEND_URL}/redirect/${shortCode}`;
     navigator.clipboard.writeText(fullUrl).then(() => {
       alert("Link copiado para a área de transferência!");
     });
@@ -29,7 +30,7 @@ export function LinksList({ links, loading, onLinkRemoved }: LinksListProps) {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:3333/links/${shortCode}`, {
+      const response = await fetch(`${config.BACKEND_URL}/links/${shortCode}`, {
         method: "DELETE",
       });
 
@@ -49,7 +50,7 @@ export function LinksList({ links, loading, onLinkRemoved }: LinksListProps) {
   }
 
   function handleDownloadCsv() {
-    fetch("http://localhost:3333/export", {
+    fetch(`${config.BACKEND_URL}/export`, {
       method: "GET",
     })
       .then(async (response) => {
@@ -109,7 +110,7 @@ export function LinksList({ links, loading, onLinkRemoved }: LinksListProps) {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <a
-                    href={`http://localhost:5173/redirect/${link.shortCode}`}
+                    href={`${config.FRONTEND_URL}/redirect/${link.shortCode}`}
                     className="text-sm text-indigo-700 font-semibold hover:underline truncate max-w-[140px] sm:max-w-none"
                     rel="noopener noreferrer"
                   >

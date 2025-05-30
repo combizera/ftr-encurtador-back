@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import { config } from "../config";
 import { InputField } from "./InputField";
 import { ButtonPrimary } from "./ButtonPrimary";
 
@@ -23,7 +25,7 @@ export function NewLinkForm({ onLinkCreated }: NewLinkFormProps) {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3333/links", {
+      const response = await fetch(`${config.BACKEND_URL}/links`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,11 +43,9 @@ export function NewLinkForm({ onLinkCreated }: NewLinkFormProps) {
         return;
       }
 
-      // Limpa os campos
       setOriginalUrl("");
       setShortCode("");
       
-      // Chama o callback para adicionar o link à lista
       onLinkCreated(data.data);
       
       alert("Link criado com sucesso!");

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { config } from '../config';
 import { Logo } from '../components/Logo';
 import { LinksList } from '../components/LinksList';
 import { NewLinkForm } from '../components/NewLinkForm';
@@ -18,7 +19,7 @@ export function Home() {
   async function fetchLinks() {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3333/links/");
+      const response = await fetch(`${config.BACKEND_URL}/links/`);
       const data = await response.json();
 
       if (data.success) {
@@ -53,9 +54,9 @@ export function Home() {
         </header>
         <main className="mt-4 w-full flex flex-col md:flex-row items-start gap-6">
           <NewLinkForm onLinkCreated={addNewLink} />
-          <LinksList 
-            links={links} 
-            loading={loading} 
+          <LinksList
+            links={links}
+            loading={loading}
             onLinkRemoved={removeLink}
           />
         </main>

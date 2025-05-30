@@ -1,6 +1,8 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
 import { LinkSimple } from "phosphor-react";
+import { useParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+
+import { config } from "../config";
 
 export function Redirect() {
   const { shortCode } = useParams<{ shortCode: string }>();
@@ -18,23 +20,24 @@ export function Redirect() {
           return;
         }
 
-        const apiBase = "http://localhost:3333/links";
-
+        const apiBase = `${config.BACKEND_URL}/links`;
         const res = await fetch(`${apiBase}/${shortCode}`);
+        
         if (!res.ok) throw new Error("Resposta inválida do servidor");
-        const result = await res.json();
 
+        const result = await res.json();
+        
         if (!result.success || !result.data?.originalUrl) {
           setError("Link não encontrado.");
           return;
         }
 
         const originalUrl = result.data.originalUrl;
-
+        
         await fetch(`${apiBase}/${shortCode}`, { method: "PUT" });
-
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         window.location.href = originalUrl;
       } catch (err) {
         setError("Erro ao redirecionar.");
