@@ -97,7 +97,7 @@ export function LinksList() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 w-full max-w-2xl">
+    <div className="bg-white rounded-lg shadow p-6 w-full max-w-2xl max-h-[450px] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-800">
           Meus links
@@ -128,16 +128,15 @@ export function LinksList() {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <a
-                    href={`https://${link.originalUrl}`}
+                    href={`http://localhost:5173/redirect/${link.shortCode}`}
                     className="text-sm text-indigo-700 font-semibold hover:underline truncate max-w-[140px] sm:max-w-none"
-                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     brev.ly/{link.shortCode}
                   </a>
-                  <span className="text-xs text-gray-500 truncate max-w-[150px] sm:max-w-none">
-                    {link.originalUrl.length > 60 ?
-                      `${link.originalUrl.substring(0, 60)}...` :
+                  <span className="block text-xs text-gray-500 truncate max-w-[220px]">
+                    {link.originalUrl.length > 45 ?
+                      `${link.originalUrl.substring(0, 45)}...` :
                       link.originalUrl
                     }
                   </span>

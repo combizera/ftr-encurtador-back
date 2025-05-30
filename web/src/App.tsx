@@ -9,7 +9,7 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/redirect" element={<Redirect to="/final" />} />
+        <Route path="/redirect/:shortCode" element={<Redirect />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

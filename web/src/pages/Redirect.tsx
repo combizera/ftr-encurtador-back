@@ -1,22 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { LinkSimple } from "phosphor-react";
-import { Link, useNavigate } from "react-router-dom";
 
-interface RedirectProps {
-  to: string;
-  delay?: number;
-}
-
-export function Redirect({ to, delay = 3000 }: RedirectProps) {
-  const navigate = useNavigate();
+export function Redirect() {
+  const { shortCode } = useParams<{ shortCode: string }>();
+  const [error, setError] = useState<string | null>(null);
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigate(to);
-    }, delay);
+    if (hasRedirected.current) return;
+    hasRedirected.current = true;
 
-    return () => clearTimeout(timeout);
-  }, [to, delay, navigate]);
+    async function handleRedirect() {
+      try {
+        if (!shortCode) {
+          setError("Código inválido.");
+          return;
+        }
+
+        const apiBase = "http://localhost:3333/links";
+
+        const res = await fetch(`${apiBase}/${shortCode}`);
+        if (!res.ok) throw new Error("Resposta inválida do servidor");
+        const result = await res.json();
+
+        if (!result.success || !result.data?.originalUrl) {
+          setError("Link não encontrado.");
+          return;
+        }
+
+        const originalUrl = result.data.originalUrl;
+
+        await fetch(`${apiBase}/${shortCode}`, { method: "PUT" });
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        window.location.href = originalUrl;
+      } catch (err) {
+        setError("Erro ao redirecionar.");
+        console.error(err);
+      }
+    }
+
+    handleRedirect();
+  }, [shortCode]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-sm w-full">
+          <h1 className="text-lg font-semibold mb-2">Erro</h1>
+          <p className="text-sm text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -28,12 +66,7 @@ export function Redirect({ to, delay = 3000 }: RedirectProps) {
           Redirecionando...
         </h1>
         <p className="text-sm text-gray-600">
-          O link será aberto automaticamente em alguns instantes.
-          <br />
-          Não foi redirecionado?{" "}
-          <Link to={to} className="text-blue-700 hover:underline">
-            Acesse aqui
-          </Link>
+          Você será redirecionado automaticamente.
         </p>
       </div>
     </div>
