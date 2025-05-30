@@ -1,41 +1,22 @@
-import { useEffect, useState } from "react";
 import { DownloadSimple, Trash, Copy, Link } from "phosphor-react";
 
 import { IconButton } from "./IconButton";
 import { ButtonSecondary } from "./ButtonSecondary";
 
-type Link = {
+type LinkType = {
   id: string;
   shortCode: string;
   originalUrl: string;
   accessCount: number;
 };
 
-export function LinksList() {
-  const [links, setLinks] = useState<Link[]>([]);
-  const [loading, setLoading] = useState(true);
+interface LinksListProps {
+  links: LinkType[];
+  loading: boolean;
+  onLinkRemoved: (shortCode: string) => void;
+}
 
-  useEffect(() => {
-    async function fetchLinks() {
-      try {
-        const response = await fetch("http://localhost:3333/links/");
-        const data = await response.json();
-
-        if (data.success) {
-          setLinks(data.data);
-        } else {
-          console.error("Erro ao buscar links:", data.error);
-        }
-      } catch (error) {
-        console.error("Erro na requisição:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLinks();
-  }, []);
-
+export function LinksList({ links, loading, onLinkRemoved }: LinksListProps) {
   function copyLink(shortCode: string) {
     const fullUrl = `http://localhost:5173/redirect/${shortCode}`;
     navigator.clipboard.writeText(fullUrl).then(() => {
@@ -59,7 +40,7 @@ export function LinksList() {
         return;
       }
 
-      setLinks((prev) => prev.filter((link) => link.shortCode !== shortCode));
+      onLinkRemoved(shortCode);
       alert("Link deletado com sucesso!");
     } catch (error) {
       alert("Erro ao se comunicar com o servidor.");

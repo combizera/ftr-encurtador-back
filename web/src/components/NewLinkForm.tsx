@@ -2,7 +2,18 @@ import { useState } from "react";
 import { InputField } from "./InputField";
 import { ButtonPrimary } from "./ButtonPrimary";
 
-export function NewLinkForm() {
+type Link = {
+  id: string;
+  shortCode: string;
+  originalUrl: string;
+  accessCount: number;
+};
+
+interface NewLinkFormProps {
+  onLinkCreated: (newLink: Link) => void;
+}
+
+export function NewLinkForm({ onLinkCreated }: NewLinkFormProps) {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortCode, setShortCode] = useState("");
   const [error, setError] = useState("");
@@ -30,8 +41,13 @@ export function NewLinkForm() {
         return;
       }
 
+      // Limpa os campos
       setOriginalUrl("");
       setShortCode("");
+      
+      // Chama o callback para adicionar o link à lista
+      onLinkCreated(data.data);
+      
       alert("Link criado com sucesso!");
     } catch {
       setError("Erro ao se comunicar com o servidor.");
@@ -46,7 +62,6 @@ export function NewLinkForm() {
       <h2 className="text-lg font-semibold mb-4">
         Novo link
       </h2>
-
       <InputField
         label="Link Original"
         placeholder="www.exemplo.com.br"
@@ -55,7 +70,6 @@ export function NewLinkForm() {
         onChange={(e) => setOriginalUrl(e.target.value)}
         error={error}
       />
-
       <InputField
         label="Link Encurtado"
         placeholder="seu-alias"
@@ -65,7 +79,6 @@ export function NewLinkForm() {
         prefix="brev.ly/"
         error={error}
       />
-
       <ButtonPrimary type="submit" className="mt-4">
         Salvar link
       </ButtonPrimary>
