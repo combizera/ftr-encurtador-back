@@ -67,9 +67,33 @@ export function LinksList() {
     }
   }
 
-
   function handleDownloadCsv() {
-    //
+    fetch("http://localhost:3333/export", {
+      method: "GET",
+    })
+      .then(async (response) => {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+
+        const contentDisposition = response.headers.get("Content-Disposition");
+        const filenameMatch = contentDisposition?.match(/filename=([^;\n]+)/i);
+        const filename = filenameMatch?.[1] || "relatorio.csv";
+
+        console.log("Nome do arquivo:", filename);
+        console.log("Content-Disposition:", contentDisposition);
+
+        a.download = filename.trim();
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Erro ao baixar CSV:", error);
+        alert("Erro ao tentar baixar o relatório.");
+      });
   }
 
   return (
@@ -78,7 +102,11 @@ export function LinksList() {
         <h2 className="text-lg font-semibold text-gray-800">
           Meus links
         </h2>
-        <ButtonSecondary title="Baixar CSV" onClick={handleDownloadCsv}>
+        <ButtonSecondary
+          title="Baixar CSV"
+          onClick={handleDownloadCsv}
+          disabled={loading}
+        >
           <DownloadSimple size={16} />
           Baixar CSV
         </ButtonSecondary>

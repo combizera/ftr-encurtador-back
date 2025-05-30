@@ -9,6 +9,8 @@ export const app = fastify()
 app.register(fastifyCors, {
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'], 
+  exposedHeaders: ['Content-Disposition']
 })
 
 app.get('/hello', () => {
