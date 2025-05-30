@@ -37,7 +37,7 @@ export function LinksList() {
   }, []);
 
   function copyLink(shortCode: string) {
-    const fullUrl = `https://brev.ly/${shortCode}`;
+    const fullUrl = `http://localhost:5173/redirect/${shortCode}`;
     navigator.clipboard.writeText(fullUrl).then(() => {
       alert("Link copiado para a área de transferência!");
     });

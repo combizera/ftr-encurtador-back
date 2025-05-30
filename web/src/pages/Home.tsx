@@ -4,15 +4,17 @@ import { NewLinkForm } from '../components/NewLinkForm';
 
 export function Home() {
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex flex-col md:flex-row items-start gap-6 justify-center">
-      <header className="absolute top-6 left-6">
-        <Logo />
-      </header>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto flex flex-col items-start gap-6 justify-center p-6">
+        <header>
+          <Logo />
+        </header>
 
-      <main className="mt-20 w-full flex flex-col md:flex-row items-start gap-6 max-w-6xl mx-auto">
-        <NewLinkForm />
-        <LinksList />
-      </main>
+        <main className="mt-4 w-full flex flex-col md:flex-row items-start gap-6">
+          <NewLinkForm />
+          <LinksList />
+        </main>
+      </div>
     </div>
   );
 }
