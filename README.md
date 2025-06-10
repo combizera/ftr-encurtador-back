@@ -12,6 +12,12 @@ Após buildar, precisamos rodar o container baseado nessa imagem buildada.
 docker run --name ftr -p 3001:8080 -d ftr_app:latest
 ```
 
+Para rodar as migrations
+
+```bash
+docker exec -it ftr sh -c "npm run db:migrate"
+```
+
 Obs: trocar 8080 pela porta que você colocou no .env
 
 O projeto ficará acessível na URL: http://localhost:3001/
